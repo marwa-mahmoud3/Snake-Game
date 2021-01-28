@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Snake</title>
+    <style>
+    body {
+    background-color: lavender;
+    text-align: center;	
+	}
+	canvas {
+	    background-color: lightblue	;
+	    width: 800px;
+	    height: 610px;
+	}
+    </style>
+</head>
+<body onload="startGame()">
+    <script>       
+    function startGame(){
+        var canvas = document.createElement("canvas");
+        document.body.appendChild(canvas);  
+        canvas.id="canvas";
+        var mysound =document.createElement("audio");
+        document.body.appendChild(mysound);
+        mysound.src="eat.mp3";
+        mysound.setAttribute("preload", "true");
+        mysound.setAttribute("controls", "none");
+        mysound.style.display = "none";
+        var constcanvas = canvas.getContext('2d');
+        var foods = [];
+        class RandomFood {
+            static get(a, b) {
+                return Math.floor(Math.random() * a) + b;
+            }
+        }
+        class Food{
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.width = 7;
+                this.height = 7 ;
+            }
+            static generate() {
+                return new Food(RandomFood.get(291, 5), RandomFood.get(141, 5));
+            }
+            drawFood() {
+                constcanvas.save();
+                constcanvas.beginPath();
+                constcanvas.arc(this.x, this.y,this.width/2, 2*Math.PI,false);
+                constcanvas.shadowInset = false;
+                constcanvas.shadowBlur = RandomFood.get(10, 5);
+                constcanvas.shadowColor = 'blue';
+                constcanvas.fillStyle = 'blue';
+                constcanvas.fill();
+                constcanvas.restore();
+            }
+        }
+        class Square{
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.width = 10;
+                this.height = 10;
+                this.back = null;
+            }
+            drawSnake() {
+                constcanvas.beginPath();
+                constcanvas.arc(this.x, this.y, this.width/3 , Math.PI * 2, false);
+                constcanvas.fill();
+                var gradient = constcanvas.createLinearGradient(0, 0, 170, 0);
+                gradient.addColorStop("0", "blue");
+                gradient.addColorStop(".5" ,"red");
+                gradient.addColorStop("1.0", "yellow");
+                constcanvas.fillStyle= gradient;
+                if (this.hasBack()) 
+                    this.back.drawSnake();
+            }
+            hasBack() {
+                return this.back;
+            }
+            copy() {
+                if (this.hasBack()) {
+                    this.back.copy();
+                    this.back.x = this.x;
+                    this.back.y = this.y;
+                }
+            }
+            add() {
+                if (this.hasBack()) 
+                    return this.back.add();
+                this.back = new Square(this.x, this.y);
+                this.width *= 1.2;
+            }
+            right() {
+                this.copy();
+                this.x += this.width;
+            }
+            left() {
+                this.copy();
+                this.x -= this.width;
+            }
+            up() {
+                this.copy();
+                this.y -= this.height;
+            }
+            down() {
+                this.copy();
+                this.y += this.height;
+            }
+            hitBorder() {
+                this.width=10;
+                return this.x ===0 || this.x > 290 || this.y > 140|| this.y === 0;
+            }
+            hit(body, head) {
+                return head.x == body.x && head.y == body.y;
+            }
+            hitBody(head, second = false) {
+                if (this === head) 
+                    return this.back.hitBody(head, true);
+                if (this.hasBack()) 
+                    return this.hit(this, head) || this.back.hitBody(head);
+            }
+        }
+        class Snake {
+            constructor() {
+                this.head = new Square(150, 10);
+                this.draw();
+                this.direction = 'down';
+                this.head.add();
+                this.head.add();
+            }
+            draw() {
+                this.head.drawSnake();
+            }
+            right() {
+                if (this.direction === 'left') 
+                    return;
+                this.direction = 'right';
+            }
+            left() {
+                if (this.direction === 'right') 
+                    return;
+                this.direction = 'left';
+            }
+            up() {
+                if (this.direction === 'down') 
+                    return;
+                this.direction = 'up';
+            }
+            down() {
+                if (this.direction === 'up') 
+                    return;
+                this.direction = 'down';
+            }
+            move() {
+                if (this.direction === 'right') 
+                    return this.head.right();
+                if (this.direction === 'left') 
+                    return this.head.left();
+                if (this.direction === 'down') 
+                    return this.head.down();
+                if (this.direction === 'up') 
+                    return this.head.up();
+            }
+            eatFood() {
+                this.head.add();
+            }
+            dead() {
+                return this.head.hitBorder() || this.head.hitBody(this.head);
+            }
+        }
+        var snake = new Snake();
+        window.addEventListener('keydown', (event) => {
+            event.preventDefault();
+                if (event.keyCode === 40) 
+                    return snake.down();
+                if (event.keyCode === 39) 
+                    return snake.right();
+                if (event.keyCode === 38) 
+                    return snake.up();
+                if (event.keyCode === 37) 
+                    return snake.left();
+            return false;
+        });
+        var start=setInterval(() => {
+            snake.move();
+            constcanvas.clearRect(0, 0,300,300);
+            snake.draw();
+            drawFood();
+            if (snake.dead()) {
+                window.location.href='Gameover.html';
+                window.clearInterval(food);
+                window.clearInterval(start);
+            }
+        }, 1000 / 6);
+        var food  =  setInterval(() => {
+            var food = Food.generate();
+            foods.push(food);
+            setTimeout(() => {
+                removeFoods(food);
+            }, 8000);
+        }, 2000);
+        function drawFood() {
+            for (var i in foods) {
+                var food = foods[i];
+                if (typeof food !== 'undefined') {
+                    food.drawFood();
+                    if (hit(food, snake.head)) {
+                        removeFoods(food);
+                        snake.eatFood();
+                        mysound.play();
+                    }
+                }
+            }
+        }
+        function removeFoods(food) {
+            foods = foods.filter(f => {
+                return food !== f;
+            });
+        }
+        function hit(food, snakeHead) {
+            var hit = false;
+            
+            var ditanceX = food.x - snakeHead.x;
+            var distanceY = food.y - snakeHead.y;
+            var distance = Math.sqrt(ditanceX * ditanceX + distanceY * distanceY);
+            if (distance < 8) 
+                    hit = true;
+            return hit;
+        }
+    }
+    </script>  
+</body>
+</html>     

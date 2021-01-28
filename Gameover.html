@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Snake</title>
+	<style>
+		body{
+			background-color: lavender;
+			width:100vw;
+			height: 100vh;
+			text-align: center;
+			justify-content: center;
+			display: flex;
+			margin: 0;
+			align-items: center;
+		}
+		div{
+         background-color: lightblue;
+         width: 800px;
+    	 height: 610px;
+		}
+		span{
+			left: 34%;
+			position: absolute;
+			top: 100px;
+			color: blue;
+			font-size: 90px;
+			font-weight: bold;
+			font-family: 'Abril Fatface';
+		}
+		button{
+			margin-top: 300px;
+			width:300px;
+    	    height: 90px;
+    	    font-weight: bold;
+    		color:blue;
+    		font-size: 30px;
+    		box-shadow: 5px 10px blue;
+    		border:1px solid lightblue;
+		}
+		
+	</style>
+</head>
+<body>
+	<audio id="sound" autoplay>
+		<source src="gameover.mp3" >
+	</audio>
+	<div>
+		
+		<span>Game Over</span>
+		<button onclick="location.href='startGame.html'">Exit</button>
+	</div>
+	<!-- <script>
+			var mysound =document.createElement("audio");
+			document.body.appendChild(mysound);
+			mysound.src="gameover.mp3";
+			mysound.setAttribute("autoplay", "true");
+			mysound.setAttribute("controls", "ture");
+			mysound.style.display = "none";
+			mysound.id="sound";
+			
+			var sound =document.getElementById("sound");
+		    sound.play();
+		
+	</script>  -->
+</body>
+</html>

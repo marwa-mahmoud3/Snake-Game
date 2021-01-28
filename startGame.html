@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Snake Game</title>
+    <style type="text/css">
+    	body{
+    		text-align: center;
+    		margin: 0;
+    		display: flex;
+    		width: 100vw;
+    		height: 100vh;
+    		justify-content: center;
+    		background-color: lavender;
+            align-items: center;
+    	}
+    	div{
+    		width: 800px;
+    		height: 610px;
+    		background-color: lightblue;
+    	}
+        button{
+            width:300px;
+            height:90px;
+            font-weight:bold;
+            color: blue;
+            font-size:30px;
+            box-shadow:5px 10px blue;
+            border:1px solid lightblue;
+            margin-top: 30px
+        }
+    </style>
+</head>
+<body onload="startPage()">
+    <script>
+        function startPage()
+        {
+             
+            var newdiv=document.createElement("div");
+            document.body.appendChild(newdiv);
+
+            var newimg =document.createElement("img");
+            newdiv.appendChild(newimg);
+            newimg.src="snake.png";
+            newimg.height="250";
+
+            var br =document.createElement("br");
+            newdiv.appendChild(br);
+
+            var startButton=document.createElement("button");
+            newdiv.appendChild(startButton);
+            startButton.innerHTML="Start";
+            startButton.id="Button";
+
+            startButton.onclick=function(){
+                window.location.href='game.html';
+            };
+
+            var br =document.createElement("br");
+            newdiv.appendChild(br);
+           
+            var exitbutton=document.createElement("button");
+            newdiv.appendChild(exitbutton);
+            exitbutton.innerHTML="Exit";    
+        }
+       
+    </script>  
+</body>
+</html>
